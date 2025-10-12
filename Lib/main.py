@@ -6,6 +6,7 @@ import astropy.units as u
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 import math
+from kepler import orbit_xyz
 
 # Current UTC time
 UTC_time = datetime.utcnow()
@@ -14,7 +15,7 @@ t = Time(UTC_time)
 plt.style.use("_mpl-gallery")
 
 # Orbital periods for ephemeris sampling
-# a, e, i, w, Ω, T
+# a, e, i, w, Ω, T, Keplerian elements
 orb_elements = {
     "mercury": (0.3871, 0.20564, 7.006, 77.46, 48.34, 0.241),
     "venus": (0.7233, 0.00676, 3.398, 131.77, 76.67, 0.615),
@@ -35,27 +36,6 @@ fig, ax = plt.subplots(figsize=(10, 10))
 ax.scatter(0, 0, color="yellow", s=200)
 ax.text(0, 0, "Sun", fontsize=10, ha="center", va="bottom")
 
-def orbit_xyz(elements, num_points=500):
-    # Convert degrees into radians
-    # arbitrary change
-    i = np.radians(elements[2])
-    w = np.radians(elements[3])
-    Ω = np.radians(elements[4])
-    a = elements[0]
-    e = elements[1]
-
-    # Create a list of evenly spaced values from 0 to 2 * pi
-    v = np.linspace(0, 2 * np.pi, num_points)
-
-    # Radius in orbital plane
-    r = (a * (1 - e ** 2)) / (1 + e * np.cos(v))
-
-    # 3D coordinates
-    x = r * (np.cos(Ω) * np.cos(w + v) - np.sin(Ω) * np.sin(w + v) * np.cos(i))
-    y = r * (np.sin(Ω) * np.cos(w + v) + np.cos(Ω) * np.sin(w + v) * np.cos(i))
-    z = r * (np.sin(w + v) * np.sin(i))
-
-    return x, y, z
 
 planets_coordinates = {}
 
